@@ -5,6 +5,7 @@ import dev.arthuroliv.esmaltei.dto.request.UsuarioRequest;
 import dev.arthuroliv.esmaltei.dto.response.UsuarioResponse;
 import dev.arthuroliv.esmaltei.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,9 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public Page<UsuarioResponse> listar(UsuarioFiltroRequest filtro, Pageable pageable){
+    public Page<UsuarioResponse> listar(
+            @ParameterObject UsuarioFiltroRequest filtro,
+            @ParameterObject Pageable pageable){
         return usuarioService.listar(filtro,pageable);
     }
 
