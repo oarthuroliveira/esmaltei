@@ -40,6 +40,10 @@ public class UsuarioService {
     }
 
     public UsuarioResponse atualizar(Long id, UsuarioRequest usuarioRequest){
+        if (usuarioRequest.email() != null && usuarioRepository.existsByEmail(usuarioRequest.email())){
+            throw new RegraNegocioException("Já existe um usuário cadastrado com esse email");
+        }
+
         Usuario usuario = buscarEntidadePorId(id);
         usuarioRequest.preencher(usuario);
         Usuario usuarioAtualizado = usuarioRepository.save(usuario);
@@ -52,6 +56,6 @@ public class UsuarioService {
     }
 
     private Usuario buscarEntidadePorId(Long id){
-        return usuarioRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Aluno não encontrado"));
+        return usuarioRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Usuario não encontrado"));
     }
 }

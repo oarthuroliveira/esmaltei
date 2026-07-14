@@ -26,7 +26,7 @@ public record UsuarioRequest(
         @Past(message = "A data de nascimento deve estar no passado.")
         LocalDate dataNascimento
 
-
+        //imagem
 
         ) {
 
