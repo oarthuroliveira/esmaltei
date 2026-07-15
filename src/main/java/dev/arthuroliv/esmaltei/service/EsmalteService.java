@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EsmalteService {
 
@@ -69,5 +71,16 @@ public class EsmalteService {
 
     private Esmalte buscarEntidadePorId(Long id){
         return esmalteRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Esmalte não encontrado"));
+    }
+
+    public List<Esmalte> buscarListaEntidadePorId(List<Long> ids) {
+
+        List<Esmalte> esmaltes = esmalteRepository.findAllById(ids);
+
+        if (esmaltes.size() != ids.size()) {
+            throw new RegraNegocioException("Um ou mais esmaltes informados não existem.");
+        }
+
+        return esmaltes;
     }
 }

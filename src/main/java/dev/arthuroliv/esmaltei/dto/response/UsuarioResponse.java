@@ -12,7 +12,8 @@ public record UsuarioResponse(
         String nome,
         String email,
         LocalDate dataNascimento,
-        LocalDateTime criadoEm
+        LocalDateTime criadoEm,
+        LocalDateTime atualizadoEm
 ) {
 
     public static UsuarioResponse fromEntity(Usuario usuario){
@@ -21,7 +22,8 @@ public record UsuarioResponse(
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getDataNascimento(),
-                usuario.getCriadoEm()
+                usuario.getCriadoEm(),
+                usuario.getAtualizadoEm()
         );
     }
 }

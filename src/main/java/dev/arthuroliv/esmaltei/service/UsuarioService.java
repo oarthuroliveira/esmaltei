@@ -55,7 +55,7 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 
-    private Usuario buscarEntidadePorId(Long id){
+    public Usuario buscarEntidadePorId(Long id){
         return usuarioRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Usuario não encontrado"));
     }
 }
