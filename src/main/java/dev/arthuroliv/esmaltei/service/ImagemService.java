@@ -65,12 +65,19 @@ public class ImagemService {
         }
     }
 
-    public Resource carregar(String caminho) {
-        return null;
-    }
-
     public void excluir(String caminho) {
+        if (caminho == null || caminho.isBlank()) {
+            return;
+        }
 
+        try {
+            Path arquivo = Paths.get(uploadDir).resolve(caminho);
+
+            Files.deleteIfExists(arquivo);
+
+        } catch (IOException e) {
+            throw new RegraNegocioException("Erro ao excluir imagem.");
+        }
     }
 
     private String obterExtensao(String nomeArquivo) {

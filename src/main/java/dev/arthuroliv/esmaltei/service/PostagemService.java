@@ -84,7 +84,7 @@ public class PostagemService {
 
         if (foto != null && !foto.isEmpty()) {
 
-            if (postagem.getFoto() != null) {
+            if (postagem.getFoto() != null && !postagem.getFoto().isBlank()) {
                 imagemService.excluir(postagem.getFoto());
             }
 
@@ -98,6 +98,9 @@ public class PostagemService {
 
     public void excluir(Long id){
         Postagem postagem = buscarEntidadePorId(id);
+        if (postagem.getFoto() != null && !postagem.getFoto().isBlank()) {
+            imagemService.excluir(postagem.getFoto());
+        }
         postagemRepository.delete(postagem);
     }
 

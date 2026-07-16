@@ -10,22 +10,28 @@ import dev.arthuroliv.esmaltei.specification.UsuarioSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UsuarioService {
 
     public final UsuarioRepository usuarioRepository;
+    public final ImagemService imagemService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, ImagemService imagemService) {
         this.usuarioRepository = usuarioRepository;
+        this.imagemService = imagemService;
     }
 
-    public UsuarioResponse cadastrar(UsuarioRequest usuarioRequest){
+    public UsuarioResponse cadastrar(UsuarioRequest usuarioRequest, MultipartFile imagem){
         if (usuarioRequest.email() != null && usuarioRepository.existsByEmail(usuarioRequest.email())){
             throw new RegraNegocioException("Já existe um usuário cadastrado com esse email");
         }
 
         Usuario usuario = usuarioRequest.toEntity();
+        String caminho = imagemService.salvar(imagem, "usuarios");
+        usuario.setImagem(caminho);
+
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return UsuarioResponse.fromEntity(usuarioSalvo);
     }
@@ -39,13 +45,24 @@ public class UsuarioService {
         return UsuarioResponse.fromEntity(usuario);
     }
 
-    public UsuarioResponse atualizar(Long id, UsuarioRequest usuarioRequest){
+    public UsuarioResponse atualizar(Long id, UsuarioRequest usuarioRequest, MultipartFile imagem){
         if (usuarioRequest.email() != null && usuarioRepository.existsByEmail(usuarioRequest.email())){
             throw new RegraNegocioException("Já existe um usuário cadastrado com esse email");
         }
 
         Usuario usuario = buscarEntidadePorId(id);
         usuarioRequest.preencher(usuario);
+
+        if (imagem != null && !imagem.isEmpty()) {
+
+            if (usuario.getImagem() != null && !usuario.getImagem().isBlank()) {
+                imagemService.excluir(usuario.getImagem());
+            }
+
+            String caminho = imagemService.salvar(imagem, "usuarios");
+            usuario.setImagem(caminho);
+        }
+
         Usuario usuarioAtualizado = usuarioRepository.save(usuario);
         return UsuarioResponse.fromEntity(usuarioAtualizado);
     }

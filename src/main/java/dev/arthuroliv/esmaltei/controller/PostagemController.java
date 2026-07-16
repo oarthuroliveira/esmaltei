@@ -33,7 +33,8 @@ public class PostagemController {
             @Valid PostagemRequest postagemRequest,
 
             @RequestPart("foto")
-            MultipartFile foto) {
+            MultipartFile foto)
+    {
         return postagemService.cadastrar(postagemRequest, foto);
     }
 

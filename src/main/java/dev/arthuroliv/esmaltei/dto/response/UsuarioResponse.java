@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record UsuarioResponse(
         Long id,
+        String imagem,
         String nome,
         String email,
         LocalDate dataNascimento,
@@ -19,6 +20,7 @@ public record UsuarioResponse(
     public static UsuarioResponse fromEntity(Usuario usuario){
         return new UsuarioResponse(
                 usuario.getId(),
+                "http://localhost:8080/uploads/" + usuario.getImagem(),
                 usuario.getNome(),
                 usuario.getEmail(),
                 usuario.getDataNascimento(),

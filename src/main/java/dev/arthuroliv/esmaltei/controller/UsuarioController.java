@@ -9,7 +9,9 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -21,10 +23,17 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public UsuarioResponse cadastrar(@RequestBody @Valid UsuarioRequest usuarioRequest){
-        return usuarioService.cadastrar(usuarioRequest);
+    public UsuarioResponse cadastrar(
+            @RequestPart("dados")
+            @Valid UsuarioRequest usuarioRequest,
+
+            @RequestPart("imagem")
+            MultipartFile imagem)
+
+    {
+        return usuarioService.cadastrar(usuarioRequest, imagem);
     }
 
     @GetMapping
@@ -39,9 +48,17 @@ public class UsuarioController {
         return usuarioService.buscarPorId(id);
     }
 
-    @PutMapping("/{id}")
-    public UsuarioResponse atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioRequest usuarioRequest){
-        return usuarioService.atualizar(id,usuarioRequest);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UsuarioResponse atualizar(
+            @PathVariable Long id,
+
+            @RequestPart("dados")
+            @Valid UsuarioRequest usuarioRequest,
+
+            @RequestPart(value = "imagem")
+            MultipartFile imagem
+    ){
+        return usuarioService.atualizar(id,usuarioRequest, imagem);
     }
 
     @DeleteMapping("/{id}")
