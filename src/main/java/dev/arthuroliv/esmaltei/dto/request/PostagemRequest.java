@@ -14,9 +14,6 @@ public record PostagemRequest(
         @NotNull(message = "O ID do usuario é obrigatório")
         Long usuarioId,
 
-        @NotNull(message = "A imagem é obrigatória")
-        byte[] foto,
-
         @NotBlank(message = "A descrição é obrigatória")
         String descricao,
 
@@ -32,7 +29,6 @@ public record PostagemRequest(
                               Usuario usuario,
                               List<Esmalte> esmaltes){
                 postagem.setUsuario(usuario);
-                postagem.setFoto(foto);
                 postagem.setDescricao(descricao);
                 postagem.setEsmaltesUtilizados(esmaltes);
 

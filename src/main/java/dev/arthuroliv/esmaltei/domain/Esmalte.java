@@ -20,7 +20,7 @@ public class Esmalte {
 
     private String colecao;
 
-    private byte[] imagem;
+    private String imagem;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm;

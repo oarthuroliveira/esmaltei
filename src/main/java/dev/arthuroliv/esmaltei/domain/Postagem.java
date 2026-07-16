@@ -17,7 +17,7 @@ public class Postagem {
     private Long id;
 
 
-    private byte[] foto;
+    private String foto;
 
     private String descricao;
 

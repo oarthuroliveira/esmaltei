@@ -27,7 +27,7 @@ public class Usuario {
     private LocalDate dataNascimento;
 
 
-    private byte[] imagem;
+    private String imagem;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm;
