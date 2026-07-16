@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record EsmalteResponse(
         Long id,
+        String imagem,
         String nome,
         String marca,
         String colecao,
@@ -19,6 +20,7 @@ public record EsmalteResponse(
     public static EsmalteResponse fromEntity(Esmalte esmalte){
         return new EsmalteResponse(
                 esmalte.getId(),
+                "http://localhost:8080/uploads/" + esmalte.getImagem(),
                 esmalte.getNome(),
                 esmalte.getMarca(),
                 esmalte.getColecao(),

@@ -2,6 +2,7 @@ package dev.arthuroliv.esmaltei.controller;
 
 import dev.arthuroliv.esmaltei.dto.request.EsmalteFiltroRequest;
 import dev.arthuroliv.esmaltei.dto.request.EsmalteRequest;
+import dev.arthuroliv.esmaltei.dto.request.UsuarioRequest;
 import dev.arthuroliv.esmaltei.dto.response.EsmalteResponse;
 import dev.arthuroliv.esmaltei.service.EsmalteService;
 import jakarta.validation.Valid;
@@ -9,7 +10,9 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/esmaltes")
@@ -21,10 +24,16 @@ public class EsmalteController {
         this.esmalteService = esmalteService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public EsmalteResponse cadastrar(@RequestBody @Valid EsmalteRequest esmalteRequest){
-        return esmalteService.cadastrar(esmalteRequest);
+    public EsmalteResponse cadastrar(
+            @RequestPart("dados")
+            @Valid EsmalteRequest esmalteRequest,
+
+            @RequestPart("imagem")
+            MultipartFile imagem
+    ){
+        return esmalteService.cadastrar(esmalteRequest, imagem);
     }
 
     @GetMapping
@@ -39,9 +48,17 @@ public class EsmalteController {
         return esmalteService.buscarPorId(id);
     }
 
-    @PutMapping("/{id}")
-    public EsmalteResponse atualizar(@PathVariable Long id, @RequestBody @Valid EsmalteRequest esmalteRequest){
-        return esmalteService.atualizar(id,esmalteRequest);
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public EsmalteResponse atualizar(
+            @PathVariable Long id,
+
+            @RequestPart("dados")
+            @Valid EsmalteRequest esmalteRequest,
+
+            @RequestPart(value = "imagem")
+            MultipartFile imagem
+    ){
+        return esmalteService.atualizar(id,esmalteRequest, imagem);
     }
 
     @DeleteMapping("/{id}")

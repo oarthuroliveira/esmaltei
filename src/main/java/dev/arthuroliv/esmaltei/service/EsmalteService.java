@@ -14,6 +14,7 @@ import dev.arthuroliv.esmaltei.specification.EsmalteSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,12 +22,14 @@ import java.util.List;
 public class EsmalteService {
 
     public final EsmalteRepository esmalteRepository;
+    public final ImagemService imagemService;
 
-    public EsmalteService(EsmalteRepository esmalteRepository) {
+    public EsmalteService(EsmalteRepository esmalteRepository, ImagemService imagemService) {
         this.esmalteRepository = esmalteRepository;
+        this.imagemService = imagemService;
     }
 
-    public EsmalteResponse cadastrar(EsmalteRequest esmalteRequest){
+    public EsmalteResponse cadastrar(EsmalteRequest esmalteRequest, MultipartFile imagem){
         if (esmalteRequest.nome() != null && esmalteRequest.marca() != null &&
                 esmalteRepository.existsByNomeIgnoreCaseAndMarcaIgnoreCase(
                         esmalteRequest.nome(),
@@ -36,6 +39,10 @@ public class EsmalteService {
         }
 
         Esmalte esmalte = esmalteRequest.toEntity();
+
+        String caminho = imagemService.salvar(imagem, "esmaltes");
+        esmalte.setImagem(caminho);
+
         Esmalte esmalteSalvo = esmalteRepository.save(esmalte);
         return EsmalteResponse.fromEntity(esmalteSalvo);
     }
@@ -49,7 +56,7 @@ public class EsmalteService {
         return EsmalteResponse.fromEntity(esmalte);
     }
 
-    public EsmalteResponse atualizar(Long id, EsmalteRequest esmalteRequest){
+    public EsmalteResponse atualizar(Long id, EsmalteRequest esmalteRequest, MultipartFile imagem){
         if (esmalteRequest.nome() != null && esmalteRequest.marca() != null &&
                 esmalteRepository.existsByNomeIgnoreCaseAndMarcaIgnoreCaseAndIdNot(
                         esmalteRequest.nome(),
@@ -60,6 +67,17 @@ public class EsmalteService {
         }
         Esmalte esmalte = buscarEntidadePorId(id);
         esmalteRequest.preencher(esmalte);
+
+        if (imagem != null && !imagem.isEmpty()) {
+
+            if (esmalte.getImagem() != null && !esmalte.getImagem().isBlank()) {
+                imagemService.excluir(esmalte.getImagem());
+            }
+
+            String caminho = imagemService.salvar(imagem, "imagens");
+            esmalte.setImagem(caminho);
+        }
+
         Esmalte esmalteAtualizado = esmalteRepository.save(esmalte);
         return EsmalteResponse.fromEntity(esmalteAtualizado);
     }
