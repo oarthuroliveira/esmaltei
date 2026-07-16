@@ -20,7 +20,7 @@ public class EsmalteUsuario {
     private LocalDate validade;
 
     @Column(name = "is_favorito")
-    private boolean isFavorito;
+    private Boolean favorito;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm;

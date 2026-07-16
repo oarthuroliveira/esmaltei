@@ -69,7 +69,7 @@ public class EsmalteService {
         esmalteRepository.delete(esmalte);
     }
 
-    private Esmalte buscarEntidadePorId(Long id){
+    public Esmalte buscarEntidadePorId(Long id){
         return esmalteRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Esmalte não encontrado"));
     }
 
