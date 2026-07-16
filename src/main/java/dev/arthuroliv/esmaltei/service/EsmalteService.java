@@ -74,7 +74,7 @@ public class EsmalteService {
                 imagemService.excluir(esmalte.getImagem());
             }
 
-            String caminho = imagemService.salvar(imagem, "imagens");
+            String caminho = imagemService.salvar(imagem, "esmaltes");
             esmalte.setImagem(caminho);
         }
 
