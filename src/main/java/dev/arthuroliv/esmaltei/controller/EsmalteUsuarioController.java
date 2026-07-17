@@ -83,7 +83,7 @@ public class EsmalteUsuarioController {
         esmalteUsuarioService.excluir(id);
     }
 
-    @GetMapping("/{id}/postagens")
+    @GetMapping("/me/{id}/postagens")
     public Page<PostagemResponse> listarPostagens(
             @PathVariable Long id,
             @AuthenticationPrincipal Usuario usuario,
