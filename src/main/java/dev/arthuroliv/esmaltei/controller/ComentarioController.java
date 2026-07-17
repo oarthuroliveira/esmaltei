@@ -1,7 +1,9 @@
 package dev.arthuroliv.esmaltei.controller;
 
+import dev.arthuroliv.esmaltei.domain.Usuario;
 import dev.arthuroliv.esmaltei.dto.request.ComentarioAtualizacaoRequest;
 import dev.arthuroliv.esmaltei.dto.request.ComentarioFiltroRequest;
+import dev.arthuroliv.esmaltei.dto.request.ComentarioRequest;
 import dev.arthuroliv.esmaltei.dto.response.ComentarioResponse;
 import dev.arthuroliv.esmaltei.service.ComentarioService;
 import jakarta.validation.Valid;
@@ -9,6 +11,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,17 +40,20 @@ public class ComentarioController {
 
     @PutMapping("/{id}")
     public ComentarioResponse atualizar(
+            @AuthenticationPrincipal Usuario usuario,
             @PathVariable Long id,
             @Valid @RequestBody ComentarioAtualizacaoRequest request){
 
-        return comentarioService.atualizar(id, request);
+        return comentarioService.atualizar(usuario,id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable Long id){
+    public void excluir(
+            @AuthenticationPrincipal Usuario usuario,
+            @PathVariable Long id){
 
-        comentarioService.excluir(id);
+        comentarioService.excluir(usuario,id);
     }
 
 

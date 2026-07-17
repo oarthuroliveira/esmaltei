@@ -28,11 +28,8 @@ public class ComentarioService {
         this.comentarioRepository = comentarioRepository;
     }
 
-    public ComentarioResponse cadastrar(Long postagemId,
+    public ComentarioResponse cadastrar( Usuario usuario, Long postagemId,
                                         ComentarioRequest request){
-
-        Usuario usuario =
-                usuarioService.buscarEntidadePorId(request.usuarioId());
 
         Postagem postagem =
                 postagemService.buscarEntidadePorId(postagemId);
@@ -61,11 +58,16 @@ public class ComentarioService {
         return ComentarioResponse.fromEntity(comentario);
     }
 
-    public ComentarioResponse atualizar(Long id,
+    public ComentarioResponse atualizar(Usuario usuario, Long id,
                                         ComentarioAtualizacaoRequest request){
 
         Comentario comentario =
                 buscarEntidadePorId(id);
+
+        if (!comentario.getUsuario().getId().equals(usuario.getId())) {
+            throw new RegraNegocioException(
+                    "Você não pode editar este comentário.");
+        }
 
         request.preencher(comentario);
 
@@ -75,10 +77,15 @@ public class ComentarioService {
         return ComentarioResponse.fromEntity(comentarioAtualizado);
     }
 
-    public void excluir(Long id){
+    public void excluir(Usuario usuario, Long id){
 
         Comentario comentario =
                 buscarEntidadePorId(id);
+
+        if (!comentario.getUsuario().getId().equals(usuario.getId())) {
+            throw new RegraNegocioException(
+                    "Você não pode excluir este comentário.");
+        }
 
         comentarioRepository.delete(comentario);
     }

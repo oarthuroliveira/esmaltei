@@ -30,9 +30,7 @@ public class EsmalteUsuarioService {
         this.postagemService = postagemService;
     }
 
-    public EsmalteUsuarioResponse cadastrar(EsmalteUsuarioRequest esmalteUsuarioRequest){
-
-        Usuario usuario = usuarioService.buscarEntidadePorId(esmalteUsuarioRequest.usuarioId());
+    public EsmalteUsuarioResponse cadastrar(Usuario usuario,EsmalteUsuarioRequest esmalteUsuarioRequest){
 
         Esmalte esmalte = esmalteService.buscarEntidadePorId(esmalteUsuarioRequest.esmalteId());
 
@@ -47,17 +45,42 @@ public class EsmalteUsuarioService {
         return EsmalteUsuarioResponse.fromEntity(EsmalteUsuarioSalvo);
     }
 
+
     public Page<EsmalteUsuarioResponse> listar(EsmalteUsuarioFiltroRequest filtro , Pageable pageable){
         return esmalteUsuarioRepository.findAll(EsmalteUsuarioSpecification.comFiltros(filtro), pageable).map(EsmalteUsuarioResponse::fromEntity);
     }
 
-    public Page<PostagemResponse> listarPostagens(Long esmalteUsuarioId,
+    public Page<PostagemResponse> listarPostagens(Usuario usuario,
+                                                  Long esmalteUsuarioId,
                                                   Pageable pageable) {
 
         EsmalteUsuario esmalteUsuario = buscarEntidadePorId(esmalteUsuarioId);
 
+        if (!esmalteUsuario.getUsuario().getId().equals(usuario.getId())) {
+            throw new RegraNegocioException("Esse esmalte não pertence ao usuário.");
+        }
+
         PostagemFiltroRequest filtro = new PostagemFiltroRequest(
-                esmalteUsuario.getUsuario().getId(),
+                usuario.getId(),
+                esmalteUsuario.getEsmalte().getId()
+        );
+
+        return postagemService.listar(filtro, pageable);
+    }
+
+    public Page<PostagemResponse> listarPostagensOutros(
+            Long usuarioId,
+            Long esmalteUsuarioId,
+            Pageable pageable) {
+
+        EsmalteUsuario esmalteUsuario = buscarEntidadePorId(esmalteUsuarioId);
+
+        if (!esmalteUsuario.getUsuario().getId().equals(usuarioId)) {
+            throw new RegraNegocioException("Esse esmalte não pertence ao usuário.");
+        }
+
+        PostagemFiltroRequest filtro = new PostagemFiltroRequest(
+                usuarioId,
                 esmalteUsuario.getEsmalte().getId()
         );
 

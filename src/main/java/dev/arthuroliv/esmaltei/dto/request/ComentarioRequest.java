@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record ComentarioRequest(
 
-        @NotNull(message = "O ID do usuário é obrigatório")
-        Long usuarioId,
-
         @NotBlank(message = "O comentário é obrigatório")
         String texto
 

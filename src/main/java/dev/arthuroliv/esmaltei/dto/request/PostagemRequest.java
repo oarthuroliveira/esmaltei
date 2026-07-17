@@ -11,8 +11,6 @@ import java.util.List;
 
 public record PostagemRequest(
 
-        @NotNull(message = "O ID do usuario é obrigatório")
-        Long usuarioId,
 
         @NotBlank(message = "A descrição é obrigatória")
         String descricao,

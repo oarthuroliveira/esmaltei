@@ -13,10 +13,6 @@ import java.util.List;
 public record EsmalteUsuarioRequest(
 
 
-        @NotNull(message = "O ID do usuario é obrigatório")
-        Long usuarioId,
-
-
         @NotNull(message = "O ID do esmalte é obrigatório")
         Long esmalteId,
 

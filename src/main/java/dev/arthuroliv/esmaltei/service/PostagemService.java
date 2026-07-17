@@ -43,9 +43,7 @@ public class PostagemService {
         this.imagemService = imagemService;
     }
 
-    public PostagemResponse cadastrar(PostagemRequest postagemRequest, MultipartFile foto){
-        // Valida e busca o usuário
-        Usuario usuario = usuarioService.buscarEntidadePorId(postagemRequest.usuarioId());
+    public PostagemResponse cadastrar(Usuario usuario, PostagemRequest postagemRequest, MultipartFile foto){
 
         // Busca todos os esmaltes
         List<Esmalte> esmaltes = esmalteService.buscarListaEntidadePorId(postagemRequest.esmaltesUtilizados());
@@ -53,11 +51,10 @@ public class PostagemService {
         Postagem postagem = postagemRequest.toEntity(usuario, esmaltes);
 
         String caminho = imagemService.salvar(foto, "postagens");
-
         postagem.setFoto(caminho);
 
         Postagem postagemSalva = postagemRepository.save(postagem);
-        return montarResponse(postagemSalva, null);
+        return montarResponse(postagemSalva, usuario);
 
     }
 
@@ -70,17 +67,20 @@ public class PostagemService {
         return montarResponse(postagem, null);
     }
 
-    public PostagemResponse atualizar(Long id, PostagemRequest postagemRequest, MultipartFile foto){
+    public PostagemResponse atualizar(Usuario usuario, Long id, PostagemRequest postagemRequest, MultipartFile foto){
 
         Postagem postagem = buscarEntidadePorId(id);
 
-        Usuario usuario = usuarioService.buscarEntidadePorId(postagemRequest.usuarioId());
+        if (!postagem.getUsuario().getId().equals(usuario.getId())) {
+            throw new RegraNegocioException(
+                    "Você não pode editar esta postagem.");
+        }
 
         List<Esmalte> esmaltes = esmalteService.buscarListaEntidadePorId(
                 postagemRequest.esmaltesUtilizados()
         );
 
-        postagemRequest.preencher(postagem, usuario, esmaltes);
+        postagemRequest.preencher(postagem, postagem.getUsuario(), esmaltes);
 
         if (foto != null && !foto.isEmpty()) {
 
@@ -93,22 +93,29 @@ public class PostagemService {
         }
 
         Postagem postagemAtualizada = postagemRepository.save(postagem);
-        return montarResponse(postagem, null);
+        return montarResponse(postagem, postagem.getUsuario());
     }
 
-    public void excluir(Long id){
+    public void excluir(Usuario usuario,Long id){
+
         Postagem postagem = buscarEntidadePorId(id);
+
+        if (!postagem.getUsuario().getId().equals(usuario.getId())) {
+            throw new RegraNegocioException(
+                    "Você não pode excluir esta postagem.");
+        }
+
         if (postagem.getFoto() != null && !postagem.getFoto().isBlank()) {
             imagemService.excluir(postagem.getFoto());
         }
         postagemRepository.delete(postagem);
     }
 
-    public PostagemResponse curtir(Long postagemId, Long usuarioId){
+    public PostagemResponse curtir(Long postagemId, Usuario usuario){
 
         Optional<Curtida> curtida =
                 curtidaRepository.findByUsuarioIdAndPostagemId(
-                        usuarioId,
+                        usuario.getId(),
                         postagemId);
 
         if(curtida.isPresent()){
@@ -117,8 +124,6 @@ public class PostagemService {
 
         }else{
 
-            Usuario usuario =
-                    usuarioService.buscarEntidadePorId(usuarioId);
 
             Postagem postagem =
                     buscarEntidadePorId(postagemId);
@@ -130,7 +135,7 @@ public class PostagemService {
             curtidaRepository.save(novaCurtida);
         }
 
-        return montarResponse(buscarEntidadePorId(postagemId), usuarioId);
+        return montarResponse(buscarEntidadePorId(postagemId), usuario);
     }
 
     //Util
@@ -139,7 +144,7 @@ public class PostagemService {
         return postagemRepository.findById(id).orElseThrow(()-> new RegraNegocioException("Postagem não encontrada"));
     }
 
-    private PostagemResponse montarResponse(Postagem postagem, Long usuarioId){
+    private PostagemResponse montarResponse(Postagem postagem, Usuario usuario){
 
         long quantidadeCurtidas =
                 curtidaRepository.countByPostagemId(postagem.getId());
@@ -149,9 +154,9 @@ public class PostagemService {
 
         Boolean curtido = null;
 
-        if (usuarioId != null) {
+        if (usuario != null) {
             curtido = curtidaRepository.existsByUsuarioIdAndPostagemId(
-                    usuarioId,
+                    usuario.getId(),
                     postagem.getId());
         }
 

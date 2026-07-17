@@ -26,7 +26,7 @@ public record UsuarioRequest(
         @Past(message = "A data de nascimento deve estar no passado.")
         LocalDate dataNascimento
 
-        //imagem
+
 
         ) {
 
@@ -39,7 +39,6 @@ public record UsuarioRequest(
     public void preencher(Usuario usuario){
         usuario.setNome(nome);
         usuario.setEmail(email);
-        usuario.setSenha(senha);
         usuario.setDataNascimento(dataNascimento);
 
 
