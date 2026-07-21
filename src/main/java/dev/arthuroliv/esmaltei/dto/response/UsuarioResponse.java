@@ -11,6 +11,7 @@ public record UsuarioResponse(
         Long id,
         String imagem,
         String nome,
+        String username,
         String email,
         LocalDate dataNascimento,
         LocalDateTime criadoEm,
@@ -23,6 +24,7 @@ public record UsuarioResponse(
                 "http://localhost:8080/uploads/" + usuario.getImagem(),
                 usuario.getNome(),
                 usuario.getEmail(),
+                usuario.getUsername(),
                 usuario.getDataNascimento(),
                 usuario.getCriadoEm(),
                 usuario.getAtualizadoEm()

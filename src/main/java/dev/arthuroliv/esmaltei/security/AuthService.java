@@ -28,8 +28,8 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        Usuario usuario = usuarioRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RegraNegocioException("Email ou senha inválidos"));
+        Usuario usuario = usuarioRepository.findByEmailOrUsername(request.login(), request.login())
+                .orElseThrow(() -> new RegraNegocioException("Login ou senha inválidos"));
 
         if (!passwordEncoder.matches(request.senha(), usuario.getSenha())) {
             throw new RegraNegocioException("Email ou senha inválidos");

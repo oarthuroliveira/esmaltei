@@ -14,6 +14,10 @@ public record UsuarioRequest(
         @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
         String nome,
 
+        @NotBlank
+        @Size(min = 3, max = 30)
+        String username,
+
         @NotBlank(message = "O e-mail é obrigatório")
         @Email(message = "E-mail inválido")
         @Size(max = 100, message = "O e-mail deve ter no máximo 100 caracteres.")
@@ -38,6 +42,7 @@ public record UsuarioRequest(
 
     public void preencher(Usuario usuario){
         usuario.setNome(nome);
+        usuario.setUsername(username);
         usuario.setEmail(email);
         usuario.setDataNascimento(dataNascimento);
 

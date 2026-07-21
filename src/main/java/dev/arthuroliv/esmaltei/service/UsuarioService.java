@@ -4,8 +4,10 @@ import dev.arthuroliv.esmaltei.domain.Role;
 import dev.arthuroliv.esmaltei.domain.Usuario;
 import dev.arthuroliv.esmaltei.dto.request.UsuarioFiltroRequest;
 import dev.arthuroliv.esmaltei.dto.request.UsuarioRequest;
+import dev.arthuroliv.esmaltei.dto.response.UsuarioPerfilResponse;
 import dev.arthuroliv.esmaltei.dto.response.UsuarioResponse;
 import dev.arthuroliv.esmaltei.exception.RegraNegocioException;
+import dev.arthuroliv.esmaltei.repository.SeguidorRepository;
 import dev.arthuroliv.esmaltei.repository.UsuarioRepository;
 import dev.arthuroliv.esmaltei.specification.UsuarioSpecification;
 import org.springframework.data.domain.Page;
@@ -18,14 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final SeguidorRepository seguidorRepository;
     private final ImagemService imagemService;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository,
-                          ImagemService imagemService,
-                          PasswordEncoder passwordEncoder) {
-
+    public UsuarioService(UsuarioRepository usuarioRepository, SeguidorRepository seguidorRepository, ImagemService imagemService, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.seguidorRepository = seguidorRepository;
         this.imagemService = imagemService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -33,6 +34,10 @@ public class UsuarioService {
     public UsuarioResponse cadastrar(UsuarioRequest usuarioRequest, MultipartFile imagem){
         if (usuarioRequest.email() != null && usuarioRepository.existsByEmail(usuarioRequest.email())){
             throw new RegraNegocioException("Já existe um usuário cadastrado com esse email");
+        }
+
+        if (usuarioRequest.username() != null && usuarioRepository.existsByUsername(usuarioRequest.username())){
+            throw new RegraNegocioException("Já existe um usuário cadastrado com esse username");
         }
 
         Usuario usuario = usuarioRequest.toEntity();
@@ -51,8 +56,29 @@ public class UsuarioService {
         return usuarioRepository.findAll(UsuarioSpecification.comFiltros(filtro), pageable).map(UsuarioResponse::fromEntity);
     }
 
-    public UsuarioResponse perfil(Usuario usuario){
-        return UsuarioResponse.fromEntity(usuario);
+    public UsuarioPerfilResponse perfil(Usuario usuario){
+        long seguidores =
+                seguidorRepository.countBySeguidoId(usuario.getId());
+
+        long seguindo =
+                seguidorRepository.countBySeguidorId(usuario.getId());
+
+        return UsuarioPerfilResponse.fromEntity(usuario, seguidores, seguindo, false );
+    }
+
+    public UsuarioPerfilResponse buscarPerfilPorId(Long id, Usuario usuarioLogado){
+        Usuario usuario = buscarEntidadePorId(id);
+
+        long seguidores =
+                seguidorRepository.countBySeguidoId(id);
+
+        long seguindo =
+                seguidorRepository.countBySeguidorId(id);
+
+        boolean seguindoUsuario = seguidorRepository.existsBySeguidorIdAndSeguidoId(usuarioLogado.getId(), id);
+
+        return UsuarioPerfilResponse.fromEntity(usuario, seguidores, seguindo, seguindoUsuario );
+
     }
 
     public UsuarioResponse buscarPorId(Long id){

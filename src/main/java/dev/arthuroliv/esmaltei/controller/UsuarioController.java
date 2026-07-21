@@ -3,6 +3,7 @@ package dev.arthuroliv.esmaltei.controller;
 import dev.arthuroliv.esmaltei.domain.Usuario;
 import dev.arthuroliv.esmaltei.dto.request.UsuarioFiltroRequest;
 import dev.arthuroliv.esmaltei.dto.request.UsuarioRequest;
+import dev.arthuroliv.esmaltei.dto.response.UsuarioPerfilResponse;
 import dev.arthuroliv.esmaltei.dto.response.UsuarioResponse;
 import dev.arthuroliv.esmaltei.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -45,13 +46,23 @@ public class UsuarioController {
         return usuarioService.listar(filtro,pageable);
     }
 
+    @GetMapping("/{id}/perfil")
+    public UsuarioPerfilResponse busparPerfilPorId(
+            @AuthenticationPrincipal Usuario usuarioLogado,
+            @PathVariable Long id
+
+    ){
+        return usuarioService.buscarPerfilPorId(id,usuarioLogado);
+    }
+
+
     @GetMapping("/{id}")
     public UsuarioResponse buscarPorId(@PathVariable Long id){
         return usuarioService.buscarPorId(id);
     }
 
     @GetMapping("/me")
-    public UsuarioResponse perfil(@AuthenticationPrincipal Usuario usuario){
+    public UsuarioPerfilResponse perfil(@AuthenticationPrincipal Usuario usuario){
         return usuarioService.perfil(usuario);
     }
 

@@ -37,7 +37,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String extrairEmail(String token) {
+    public String extrairLogin(String token) {
 
         return getClaims(token).getSubject();
     }
